@@ -74,6 +74,24 @@
 <a name="setting-it-up" class="anchor" href="#setting-it-up"><span class="octicon octicon-link"></span></a>Setting it up</h2>
 
 <h3>
+<a name="installing-spoke-firmware-on-an-arduino" class="anchor" href="#installing-spoke-firmware-on-an-arduino"><span class="octicon octicon-link"></span></a>Installing Spoke Firmware on an Arduino</h3>
+
+<ul>
+<li>Download arduino IDE from <a href="http://www.arduino.cc">http://www.arduino.cc</a>
+</li>
+<li>Open SpokeRestDuino.ino in the IDE</li>
+<li>Modify MAC, IP, and serial/ID</li>
+<li>Upload to arduino</li>
+<li>Plug something clever into the arduino
+
+<ul>
+<li>PowerSwitch Tail II</li>
+<li>Door Sensor</li>
+<li>Temperature Sensor</li>
+<li>etc</li>
+</ul>
+</li>
+</ul><h3>
 <a name="installing-configuring--starting-the-hub" class="anchor" href="#installing-configuring--starting-the-hub"><span class="octicon octicon-link"></span></a>Installing, Configuring, &amp; Starting the Hub</h3>
 
 <pre><code># Install Needed Linux &amp; Python Packages
@@ -118,13 +136,14 @@ $ vi /etc/homity/homityclient.conf
 # -- Set username &amp; password to hub_user_username and hub_user_password set during hub setup.  Set server if Hub is remote.
 
 # Make alias to easily run CLIs.
-$ echo alias homity=\'python ~/homity-client/homityshell.py\' &gt;&gt; ~/.bash-aliases
+$ alias homity='python ~/homity-client/homityshell.py' 
 </code></pre>
 
 <h3>
 <a name="start-playing-with-the-hub" class="anchor" href="#start-playing-with-the-hub"><span class="octicon octicon-link"></span></a>Start Playing With the Hub</h3>
 
-<pre><code>pi@debian-test:~/homity-hub$ homity
+<pre><code>#Display full list of commands
+$ homity
 usage: homity [-d] [-v] [--timeout TIMEOUT] &lt;subcommand&gt; ...
 
 Homity CLI
@@ -154,13 +173,15 @@ Optional arguments:
 
 See "homity help COMMAND" for help on a specific command.
 
-pi@debian-test:~/homity-hub$ homity spoke-driver-list
+# Display available spoke drivers
+$ homity spoke-driver-list
 [u'SpokeRestDuinoDriver']
 
+# Display list of currently associated spokes.  Since we're new, this is empty.
 pi@debian-test:~/homity-hub$ homity spoke-list
 
-pi@debian-test:~/homity-hub$ 
-pi@debian-test:~/homity-hub$ homity spoke-create LivingRoom SpokeRestDuinoDriver address=http://192.168.1.250:8080/
+# Create a new spoke object to point at the arduino you just set up.  This will return active=True if found.
+$ homity spoke-create LivingRoom SpokeRestDuinoDriver address=http://192.168.1.250:8080/
 +-------------+---------------------------------------------+
 | Property    | Value                                       |
 +-------------+---------------------------------------------+
@@ -170,6 +191,8 @@ pi@debian-test:~/homity-hub$ homity spoke-create LivingRoom SpokeRestDuinoDriver
 | driver      | SpokeRestDuinoDriver                        |
 | driver_info | {u'address': u'http://192.168.1.250:8080/'} |
 +-------------+---------------------------------------------+
+
+# Display all pins available on the spoke along with configuration &amp; current status
 pi@debian-test:~/homity-hub$ homity spoke-pin-list c81be5df8c93d4135271e5b81900115f
 +----------------------------------+------+-----+-----------+---------+--------+--------+
 | UUID                             | Name | Num | Allocated | Digital | Output | Status |
@@ -179,13 +202,15 @@ pi@debian-test:~/homity-hub$ homity spoke-pin-list c81be5df8c93d4135271e5b819001
 | 481e72fecd9a4bda9ec7fbb91138ec21 |      | 7   | False     | True    | True   | False  |
 | 4c1eece1a68c4f75b4eaa6eac11b5653 |      | 3   | False     | True    | True   | False  |
 | 637d351c098940019bab376dfaf7cb0b |      | A5  | False     | False   | False  | 183    |
-| 81f0cddb0a814d9390a110fdb0b2b693 |      | 5   | False     | True    | True   | True   |
+| 81f0cddb0a814d9390a110fdb0b2b693 |      | 5   | False     | True    | True   | False  |
 | 832fb12cd4374345a1b33253e5463a61 |      | A3  | False     | False   | False  | 187    |
 | b34c6f3d215140cd9a12381c05e39a5b |      | A0  | False     | False   | False  | 190    |
 | c4f82a04539d4f6cac5bbf9763e0e212 |      | A2  | False     | False   | False  | 205    |
 | d769b31c314f4749b37c1aaf6cca1011 |      | A1  | False     | False   | False  | 214    |
 | f3f03ed61b22400b91465df2a100ec8a |      | 8   | False     | True    | True   | False  |
 +----------------------------------+------+-----+-----------+---------+--------+--------+
+
+# We've plugged a PowerSwitch Tail II into pin 5, so lets use that to control a Lamp.  First, lets display detailed pin information for this spoke's pin 5:
 pi@debian-test:~/homity-hub$ homity pin-show 81f0cddb0a814d9390a110fdb0b2b693
 +-----------+----------------------------------+
 | Property  | Value                            |
@@ -198,10 +223,37 @@ pi@debian-test:~/homity-hub$ homity pin-show 81f0cddb0a814d9390a110fdb0b2b693
 | digital   | True                             |
 | output    | True                             |
 | schedule  | []                               |
-| status    | True                             |
+| status    | False                            |
 | spoke     | None                             |
 +-----------+----------------------------------+
+
+# To put the pin in use, give it a name, and change allocated to True
 pi@debian-test:~/homity-hub$ homity pin-update 81f0cddb0a814d9390a110fdb0b2b693 allocated=True name=Lamp
++-----------+----------------------------------+
+| Property  | Value                            |
++-----------+----------------------------------+
+| id        | 81f0cddb0a814d9390a110fdb0b2b693 |
+| location  | LivingRoom                       |
+| name      | Lamp                             |
+| num       | 5                                |
+| allocated | True                             |
+| digital   | True                             |
+| output    | True                             |
+| schedule  | []                               |
+| status    | False                            |
+| spoke     | None                             |
++-----------+----------------------------------+
+
+# Once allocated, it will show up in the pin list
+pi@debian-test:~/homity-hub$ homity pin-list
++----------------------------------+------------+------------+------+-----+-----------+---------+--------+--------+
+| UUID                             | Spoke UUID | Location   | Name | Num | Allocated | Digital | Output | Status |
++----------------------------------+------------+------------+------+-----+-----------+---------+--------+--------+
+| 81f0cddb0a814d9390a110fdb0b2b693 | None       | LivingRoom | Lamp | 5   | True      | True    | True   | False  |
++----------------------------------+------------+------------+------+-----+-----------+---------+--------+--------+
+
+# Lets turn the lamp on by setting status to True
+pi@debian-test:~/homity-hub$ homity pin-update 81f0cddb0a814d9390a110fdb0b2b693 status=True
 +-----------+----------------------------------+
 | Property  | Value                            |
 +-----------+----------------------------------+
@@ -216,13 +268,8 @@ pi@debian-test:~/homity-hub$ homity pin-update 81f0cddb0a814d9390a110fdb0b2b693 
 | status    | True                             |
 | spoke     | None                             |
 +-----------+----------------------------------+
-pi@debian-test:~/homity-hub$ homity pin-list
-+----------------------------------+------------+------------+------+-----+-----------+---------+--------+--------+
-| UUID                             | Spoke UUID | Location   | Name | Num | Allocated | Digital | Output | Status |
-+----------------------------------+------------+------------+------+-----+-----------+---------+--------+--------+
-| 81f0cddb0a814d9390a110fdb0b2b693 | None       | LivingRoom | Lamp | 5   | True      | True    | True   | True   |
-+----------------------------------+------------+------------+------+-----+-----------+---------+--------+--------+
-pi@debian-test:~/homity-hub$ 
+
+# Lets set a timer.  The command below will configure the lamp to turn on (true, false for off) at 16:30 every day (0-6, 0 = Sunday).  These fields follow standard crontab syntax rules.  Google them. 
 pi@debian-test:~/homity-hub$ homity pin-schedule-add 81f0cddb0a814d9390a110fdb0b2b693 30 16 0-6 true
 +-----------+------------------------------------------------------------------------+
 | Property  | Value                                                                  |
