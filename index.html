@@ -74,44 +74,50 @@
 <a name="setting-it-up" class="anchor" href="#setting-it-up"><span class="octicon octicon-link"></span></a>Setting it up</h2>
 
 <h3>
-<a name="install-needed-linux--python-packages" class="anchor" href="#install-needed-linux--python-packages"><span class="octicon octicon-link"></span></a>Install Needed Linux &amp; Python Packages</h3>
+<a name="installing-configuring--starting-the-hub" class="anchor" href="#installing-configuring--starting-the-hub"><span class="octicon octicon-link"></span></a>Installing, Configuring, &amp; Starting the Hub</h3>
 
-<pre><code>$ sudo apt-get install -y git, couchdb, python-pip, curl, python-dev, libssl-dev
-$ sudo pip install couchdb flask pyopenssl requests prettytable six
-</code></pre>
+<pre><code># Install Needed Linux &amp; Python Packages
+$ sudo apt-get install -y git, couchdb, python-pip, curl, python-dev, libssl-dev
+$ sudo pip install couchdb flask pyopenssl
 
-<h3>
-<a name="create-logconfig-directories" class="anchor" href="#create-logconfig-directories"><span class="octicon octicon-link"></span></a>Create Log/Config Directories</h3>
-
-<pre><code>$ sudo mkdir /etc/homity/
+# Create Log/Config Directories
+$ sudo mkdir /etc/homity/
 $ sudo chown &lt;your_linux_username&gt; /etc/homity
 $ sudo mkdir /var/log/homity
 $ sudo chown &lt;your_linux_username&gt; /var/log/homity
-</code></pre>
 
-<h3>
-<a name="clone-git-repo-into-homedir-run-initial-setup-script" class="anchor" href="#clone-git-repo-into-homedir-run-initial-setup-script"><span class="octicon octicon-link"></span></a>Clone Git Repo Into HomeDir, Run Initial Setup Script</h3>
-
-<pre><code>$ cd ~
+# Clone Git Repo Into HomeDir, Run Initial Setup Script
+$ cd ~
 $ git clone git://github.com/openhomity/homity-hub.git
 $ cd homity-hub/
 $ python initialsetup.py &lt;hub_user_username&gt; &lt;hub_user__password&gt;
-</code></pre>
+# -- Replace args with username &amp; password you want clients to use when connecting.
 
-<h3>
-<a name="start-the-server" class="anchor" href="#start-the-server"><span class="octicon octicon-link"></span></a>Start The Server</h3>
-
-<pre><code>$ python runhub.py &amp;
+# Start The Server
+$ python runhub.py &amp;
 </code></pre>
 
 <h3>
 <a name="install--configure-the-client" class="anchor" href="#install--configure-the-client"><span class="octicon octicon-link"></span></a>Install &amp; Configure the Client</h3>
 
-<pre><code>$ cd ~
+<pre><code># Install Needed Linux &amp; Python Packages
+$ sudo pip install requests prettytable six
+
+# Create Config Directory &lt;-- if setting up on different machine than the Hub
+$ sudo mkdir /etc/homity/
+$ sudo chown &lt;your_linux_username&gt; /etc/homity
+
+# Clone the Git repo
+$ cd ~
 $ git clone git://github.com/openhomity/homity-client.git
+
+# Configure with username &amp; password
 $ cd homity-client/
 $ cp default.conf /etc/homity/homityclient.conf
-$ vi /etc/homity/homityclient.conf &lt;-- set username &amp; password to values set during hub setup
+$ vi /etc/homity/homityclient.conf 
+# -- Set username &amp; password to hub_user_username and hub_user_password set during hub setup.  Set server if Hub is remote.
+
+# Make alias to easily run CLIs.
 $ echo alias homity=\'python ~/homity-client/homityshell.py\' &gt;&gt; ~/.bash-aliases
 </code></pre>
 
