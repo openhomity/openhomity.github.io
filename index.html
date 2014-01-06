@@ -33,8 +33,8 @@
 <p>OpenHomity is an open source home automation suite capable of controlling a variety of objects, including -</p>
 
 <ul>
-<li>Switches - light or otherwise</li>
-<li>Sensors - digital or analog</li>
+<li>Switches - light, power, etc</li>
+<li>Sensors - digital, analog</li>
 <li>Garage Doors (coming soon)</li>
 <li>Door Locks (coming soon)</li>
 <li>Alarm Systems (coming soon)</li>
@@ -73,14 +73,46 @@
 </ul><h2>
 <a name="setting-it-up" class="anchor" href="#setting-it-up"><span class="octicon octicon-link"></span></a>Setting it up</h2>
 
-<pre><code>$ install couchdb
-$ setup couchdb
-$ git clone openhomity-hub
-$ modify config file
-$ start hub
-$ git clone openhomity-client
-$ modify config file
-$ alias
+<h3>
+<a name="install-needed-linux--python-packages" class="anchor" href="#install-needed-linux--python-packages"><span class="octicon octicon-link"></span></a>Install Needed Linux &amp; Python Packages</h3>
+
+<pre><code>$ sudo apt-get install -y git, couchdb, python-pip, curl, python-dev, libssl-dev
+$ sudo pip install couchdb flask pyopenssl requests prettytable six
+</code></pre>
+
+<h3>
+<a name="create-logconfig-directories" class="anchor" href="#create-logconfig-directories"><span class="octicon octicon-link"></span></a>Create Log/Config Directories</h3>
+
+<pre><code>$ sudo mkdir /etc/homity/
+$ sudo chown &lt;your_linux_username&gt; /etc/homity
+$ sudo mkdir /var/log/homity
+$ sudo chown &lt;your_linux_username&gt; /var/log/homity
+</code></pre>
+
+<h3>
+<a name="clone-git-repo-into-homedir-run-initial-setup-script" class="anchor" href="#clone-git-repo-into-homedir-run-initial-setup-script"><span class="octicon octicon-link"></span></a>Clone Git Repo Into HomeDir, Run Initial Setup Script</h3>
+
+<pre><code>$ cd ~
+$ git clone git://github.com/openhomity/homity-hub.git
+$ cd homity-hub/
+$ python initialsetup.py &lt;hub_user_username&gt; &lt;hub_user__password&gt;
+</code></pre>
+
+<h3>
+<a name="start-the-server" class="anchor" href="#start-the-server"><span class="octicon octicon-link"></span></a>Start The Server</h3>
+
+<pre><code>$ python runhub.py &amp;
+</code></pre>
+
+<h3>
+<a name="install--configure-the-client" class="anchor" href="#install--configure-the-client"><span class="octicon octicon-link"></span></a>Install &amp; Configure the Client</h3>
+
+<pre><code>$ cd ~
+$ git clone git://github.com/openhomity/homity-client.git
+$ cd homity-client/
+$ cp default.conf /etc/homity/homityclient.conf
+$ vi /etc/homity/homityclient.conf &lt;-- set username &amp; password to values set during hub setup
+$ echo alias homity=\'python ~/homity-client/homityshell.py\' &gt;&gt; ~/.bash-aliases
 </code></pre>
 
 <h3>
