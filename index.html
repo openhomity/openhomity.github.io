@@ -122,6 +122,125 @@ $ echo alias homity=\'python ~/homity-client/homityshell.py\' &gt;&gt; ~/.bash-a
 </code></pre>
 
 <h3>
+<a name="start-playing-with-the-hub" class="anchor" href="#start-playing-with-the-hub"><span class="octicon octicon-link"></span></a>Start Playing With the Hub</h3>
+
+<pre><code>pi@debian-test:~/homity-hub$ homity
+usage: homity [-d] [-v] [--timeout TIMEOUT] &lt;subcommand&gt; ...
+
+Homity CLI
+
+Positional arguments:
+  &lt;subcommand&gt;
+    pin-list           List pins.
+    pin-schedule-add   Insert a new schedule entry.
+    pin-schedule-delete
+                       Delete a schedule entry.
+    pin-show           Show a pin.
+    pin-update         Update a pin.
+    spoke-create       Create a new spoke.
+    spoke-delete       Delete a spoke.
+    spoke-driver-list  List available spoke drivers.
+    spoke-list         List spokes.
+    spoke-pin-list     List pins for an spoke.
+    spoke-show         Show an spoke's pin.
+    spoke-update       Update a spoke's settings.
+    help               Display help about this program or one of its
+                       subcommands.
+
+Optional arguments:
+  -d, --debug          Defaults to False
+  -v, --verbose        Print more verbose output
+  --timeout TIMEOUT    Number of seconds to wait for a response
+
+See "homity help COMMAND" for help on a specific command.
+
+pi@debian-test:~/homity-hub$ homity spoke-driver-list
+[u'SpokeRestDuinoDriver']
+
+pi@debian-test:~/homity-hub$ homity spoke-list
+
+pi@debian-test:~/homity-hub$ 
+pi@debian-test:~/homity-hub$ homity spoke-create LivingRoom SpokeRestDuinoDriver address=http://192.168.1.250:8080/
++-------------+---------------------------------------------+
+| Property    | Value                                       |
++-------------+---------------------------------------------+
+| id          | c81be5df8c93d4135271e5b81900115f            |
+| name        | LivingRoom                                  |
+| active      | True                                        |
+| driver      | SpokeRestDuinoDriver                        |
+| driver_info | {u'address': u'http://192.168.1.250:8080/'} |
++-------------+---------------------------------------------+
+pi@debian-test:~/homity-hub$ homity spoke-pin-list c81be5df8c93d4135271e5b81900115f
++----------------------------------+------+-----+-----------+---------+--------+--------+
+| UUID                             | Name | Num | Allocated | Digital | Output | Status |
++----------------------------------+------+-----+-----------+---------+--------+--------+
+| 100938effdff4e3bbcb75118c569bbb3 |      | 9   | False     | True    | True   | False  |
+| 1abc8cf04c824392bb2f8a90af87ae21 |      | A4  | False     | False   | False  | 215    |
+| 481e72fecd9a4bda9ec7fbb91138ec21 |      | 7   | False     | True    | True   | False  |
+| 4c1eece1a68c4f75b4eaa6eac11b5653 |      | 3   | False     | True    | True   | False  |
+| 637d351c098940019bab376dfaf7cb0b |      | A5  | False     | False   | False  | 183    |
+| 81f0cddb0a814d9390a110fdb0b2b693 |      | 5   | False     | True    | True   | True   |
+| 832fb12cd4374345a1b33253e5463a61 |      | A3  | False     | False   | False  | 187    |
+| b34c6f3d215140cd9a12381c05e39a5b |      | A0  | False     | False   | False  | 190    |
+| c4f82a04539d4f6cac5bbf9763e0e212 |      | A2  | False     | False   | False  | 205    |
+| d769b31c314f4749b37c1aaf6cca1011 |      | A1  | False     | False   | False  | 214    |
+| f3f03ed61b22400b91465df2a100ec8a |      | 8   | False     | True    | True   | False  |
++----------------------------------+------+-----+-----------+---------+--------+--------+
+pi@debian-test:~/homity-hub$ homity pin-show 81f0cddb0a814d9390a110fdb0b2b693
++-----------+----------------------------------+
+| Property  | Value                            |
++-----------+----------------------------------+
+| id        | 81f0cddb0a814d9390a110fdb0b2b693 |
+| location  | LivingRoom                       |
+| name      |                                  |
+| num       | 5                                |
+| allocated | False                            |
+| digital   | True                             |
+| output    | True                             |
+| schedule  | []                               |
+| status    | True                             |
+| spoke     | None                             |
++-----------+----------------------------------+
+pi@debian-test:~/homity-hub$ homity pin-update 81f0cddb0a814d9390a110fdb0b2b693 allocated=True name=Lamp
++-----------+----------------------------------+
+| Property  | Value                            |
++-----------+----------------------------------+
+| id        | 81f0cddb0a814d9390a110fdb0b2b693 |
+| location  | LivingRoom                       |
+| name      | Lamp                             |
+| num       | 5                                |
+| allocated | True                             |
+| digital   | True                             |
+| output    | True                             |
+| schedule  | []                               |
+| status    | True                             |
+| spoke     | None                             |
++-----------+----------------------------------+
+pi@debian-test:~/homity-hub$ homity pin-list
++----------------------------------+------------+------------+------+-----+-----------+---------+--------+--------+
+| UUID                             | Spoke UUID | Location   | Name | Num | Allocated | Digital | Output | Status |
++----------------------------------+------------+------------+------+-----+-----------+---------+--------+--------+
+| 81f0cddb0a814d9390a110fdb0b2b693 | None       | LivingRoom | Lamp | 5   | True      | True    | True   | True   |
++----------------------------------+------------+------------+------+-----+-----------+---------+--------+--------+
+pi@debian-test:~/homity-hub$ 
+pi@debian-test:~/homity-hub$ homity pin-schedule-add 81f0cddb0a814d9390a110fdb0b2b693 30 16 0-6 true
++-----------+------------------------------------------------------------------------+
+| Property  | Value                                                                  |
++-----------+------------------------------------------------------------------------+
+| id        | 81f0cddb0a814d9390a110fdb0b2b693                                       |
+| location  | LivingRoom                                                             |
+| name      | Lamp                                                                   |
+| num       | 5                                                                      |
+| allocated | True                                                                   |
+| digital   | True                                                                   |
+| output    | True                                                                   |
+| schedule  | [{u'action': True, u'hour': u'16', u'minute': u'30', u'days': u'0-6'}] |
+| status    | True                                                                   |
+| spoke     | None                                                                   |
++-----------+------------------------------------------------------------------------+
+</code></pre>
+
+<h3>
 <a name="faq" class="anchor" href="#faq"><span class="octicon octicon-link"></span></a>FAQ</h3>
 
 <p>TBD</p>
