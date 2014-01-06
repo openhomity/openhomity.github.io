@@ -30,11 +30,11 @@
         <h3>
 <a name="welcome-to-the-openhomity-project" class="anchor" href="#welcome-to-the-openhomity-project"><span class="octicon octicon-link"></span></a>Welcome to the OpenHomity project!</h3>
 
-<p>OpenHomity is an open source home automation suite capable of controlling a variety of objects, including -</p>
+<p>OpenHomity is an open source home automation suite capable of controlling a variety of objects around the house, including -</p>
 
 <ul>
 <li>Switches - light, power, etc</li>
-<li>Sensors - digital, analog</li>
+<li>Sensors - digital (door, presence), analog (temperature, light)</li>
 <li>Garage Doors (coming soon)</li>
 <li>Door Locks (coming soon)</li>
 <li>Alarm Systems (coming soon)</li>
@@ -43,6 +43,17 @@
 
 <h3>
 <a name="components" class="anchor" href="#components"><span class="octicon octicon-link"></span></a>Components</h3>
+
+<h2>
+<a name="homity-hub" class="anchor" href="#homity-hub"><span class="octicon octicon-link"></span></a>Homity Hub</h2>
+
+<p>This is the central brain of the home automation system.  It communicates with and controls/monitors each subsystem.</p>
+
+<h2>
+<a name="homity-spoke" class="anchor" href="#homity-spoke"><span class="octicon octicon-link"></span></a>Homity Spoke</h2>
+
+<h2>
+<a name="additional-components" class="anchor" href="#additional-components"><span class="octicon octicon-link"></span></a>Additional Components</h2>
 
 <h3>
 <a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting started</h3>
@@ -61,13 +72,15 @@
 
 <ul>
 <li>This can be any type of server or distribution you like</li>
-<li>The code is lightweight enough to run fine on a Raspberry Pi</li>
+<li>The code is lightweight enough to run fine on a Raspberry Pi or BeagleBone Black, or could be a VM</li>
 </ul>
 </li>
-<li>One or more "spoke" devices
+<li>One or more "spoke" devices, which can be
 
 <ul>
 <li>Arduino Uno ethernet</li>
+<li>Spark Core (coming soon)</li>
+<li>Electric Imp (if someone writes a driver)</li>
 </ul>
 </li>
 </ul><h2>
@@ -178,7 +191,7 @@ $ homity spoke-driver-list
 [u'SpokeRestDuinoDriver']
 
 # Display list of currently associated spokes.  Since we're new, this is empty.
-pi@debian-test:~/homity-hub$ homity spoke-list
+$ homity spoke-list
 
 # Create a new spoke object to point at the arduino you just set up.  This will return active=True if found.
 $ homity spoke-create LivingRoom SpokeRestDuinoDriver address=http://192.168.1.250:8080/
@@ -193,7 +206,7 @@ $ homity spoke-create LivingRoom SpokeRestDuinoDriver address=http://192.168.1.2
 +-------------+---------------------------------------------+
 
 # Display all pins available on the spoke along with configuration &amp; current status
-pi@debian-test:~/homity-hub$ homity spoke-pin-list c81be5df8c93d4135271e5b81900115f
+$ homity spoke-pin-list c81be5df8c93d4135271e5b81900115f
 +----------------------------------+------+-----+-----------+---------+--------+--------+
 | UUID                             | Name | Num | Allocated | Digital | Output | Status |
 +----------------------------------+------+-----+-----------+---------+--------+--------+
@@ -211,7 +224,7 @@ pi@debian-test:~/homity-hub$ homity spoke-pin-list c81be5df8c93d4135271e5b819001
 +----------------------------------+------+-----+-----------+---------+--------+--------+
 
 # We've plugged a PowerSwitch Tail II into pin 5, so lets use that to control a Lamp.  First, lets display detailed pin information for this spoke's pin 5:
-pi@debian-test:~/homity-hub$ homity pin-show 81f0cddb0a814d9390a110fdb0b2b693
+$ homity pin-show 81f0cddb0a814d9390a110fdb0b2b693
 +-----------+----------------------------------+
 | Property  | Value                            |
 +-----------+----------------------------------+
@@ -228,7 +241,7 @@ pi@debian-test:~/homity-hub$ homity pin-show 81f0cddb0a814d9390a110fdb0b2b693
 +-----------+----------------------------------+
 
 # To put the pin in use, give it a name, and change allocated to True
-pi@debian-test:~/homity-hub$ homity pin-update 81f0cddb0a814d9390a110fdb0b2b693 allocated=True name=Lamp
+$ homity pin-update 81f0cddb0a814d9390a110fdb0b2b693 allocated=True name=Lamp
 +-----------+----------------------------------+
 | Property  | Value                            |
 +-----------+----------------------------------+
@@ -245,7 +258,7 @@ pi@debian-test:~/homity-hub$ homity pin-update 81f0cddb0a814d9390a110fdb0b2b693 
 +-----------+----------------------------------+
 
 # Once allocated, it will show up in the pin list
-pi@debian-test:~/homity-hub$ homity pin-list
+$ homity pin-list
 +----------------------------------+------------+------------+------+-----+-----------+---------+--------+--------+
 | UUID                             | Spoke UUID | Location   | Name | Num | Allocated | Digital | Output | Status |
 +----------------------------------+------------+------------+------+-----+-----------+---------+--------+--------+
@@ -253,7 +266,7 @@ pi@debian-test:~/homity-hub$ homity pin-list
 +----------------------------------+------------+------------+------+-----+-----------+---------+--------+--------+
 
 # Lets turn the lamp on by setting status to True
-pi@debian-test:~/homity-hub$ homity pin-update 81f0cddb0a814d9390a110fdb0b2b693 status=True
+$ homity pin-update 81f0cddb0a814d9390a110fdb0b2b693 status=True
 +-----------+----------------------------------+
 | Property  | Value                            |
 +-----------+----------------------------------+
@@ -270,7 +283,7 @@ pi@debian-test:~/homity-hub$ homity pin-update 81f0cddb0a814d9390a110fdb0b2b693 
 +-----------+----------------------------------+
 
 # Lets set a timer.  The command below will configure the lamp to turn on (true, false for off) at 16:30 every day (0-6, 0 = Sunday).  These fields follow standard crontab syntax rules.  Google them. 
-pi@debian-test:~/homity-hub$ homity pin-schedule-add 81f0cddb0a814d9390a110fdb0b2b693 30 16 0-6 true
+$ homity pin-schedule-add 81f0cddb0a814d9390a110fdb0b2b693 30 16 0-6 true
 +-----------+------------------------------------------------------------------------+
 | Property  | Value                                                                  |
 +-----------+------------------------------------------------------------------------+
