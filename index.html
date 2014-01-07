@@ -27,36 +27,67 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h3>
-<a name="welcome-to-the-openhomity-project" class="anchor" href="#welcome-to-the-openhomity-project"><span class="octicon octicon-link"></span></a>Welcome to the OpenHomity project!</h3>
+        <h1>
+<a name="welcome-to-the-openhomity-project" class="anchor" href="#welcome-to-the-openhomity-project"><span class="octicon octicon-link"></span></a>Welcome to the OpenHomity project!</h1>
 
 <p>OpenHomity is an open source home automation suite capable of controlling a variety of objects around the house, including -</p>
 
 <ul>
-<li>Switches - light, power, etc</li>
+<li>Switches - light, power</li>
 <li>Sensors - digital (door, presence), analog (temperature, light)</li>
-<li>Garage Doors (coming soon)</li>
-<li>Door Locks (coming soon)</li>
-<li>Alarm Systems (coming soon)</li>
-<li>Camera Systems (coming soon)</li>
+<li>Garage Doors </li>
+<li>Door Locks </li>
+<li>Alarm Systems </li>
+<li>Camera Systems</li>
 </ul><p>This project is written such that each of the above objects is abstracted from any specific vendor or implementation, so new devices can be supported through pluggable drivers written by users or vendors themselves.</p>
 
-<h3>
-<a name="components" class="anchor" href="#components"><span class="octicon octicon-link"></span></a>Components</h3>
+<p>This project is still in active development, so not all of the objects above are currently supported.</p>
+
+<h1>
+<a name="components" class="anchor" href="#components"><span class="octicon octicon-link"></span></a>Components</h1>
 
 <h2>
 <a name="homity-hub" class="anchor" href="#homity-hub"><span class="octicon octicon-link"></span></a>Homity Hub</h2>
 
-<p>This is the central brain of the home automation system.  It communicates with and controls/monitors each subsystem.</p>
+<p>The <a href="http://github.com/openhomity/homity-hub">homity-hub</a> is the central brain of the home automation system.  It communicates with and controls/monitors each subsystem - spokes, garages, alarms, cameras, locks.  In addition, it communicates with any clients via an open RESTful API.</p>
+
+<p>The Homity Hub software is written in Python using the Flask framework, and is backed by a CouchDB NoSQL database.  It is lightweight enough to run on a <a href="http://www.raspberrypi.org">Raspberry Pi</a> or <a href="http://beagleboard.org/products/beaglebone%20black">BeagleBone Black</a>, or in a virtual machine. </p>
 
 <h2>
 <a name="homity-spoke" class="anchor" href="#homity-spoke"><span class="octicon octicon-link"></span></a>Homity Spoke</h2>
 
+<p>The Homity Spoke is an object that contains one or more pins, where each pin can either be analog or digital, input or output.  Therefore, a pin can take the following personalities -</p>
+
+<ul>
+<li>Switch - digital &amp; output, examples - light switch, power switch</li>
+<li>Digital Sensor - digital &amp; input, examples - door open sensor, presence sensor</li>
+<li>Analog Sensor - analog &amp; input, examples - light sensor, temperature sensor</li>
+</ul><p>The spoke take the form of a variety of devices, from an Arduino with multiple input &amp; output pins to a smart light switch with just one.  The Hub can support any type of spoke a driver has been written to support.</p>
+
+<p>The <a href="http://github.com/openhomity/homity-spoke">homity-spoke</a> repository has sample code for a spoke based on an <a href="http://arduino.cc/en/Main/ArduinoBoardEthernet">Arduino Uno ethernet</a>, supported by the SpokeRestDuinoDriver on the homity-hub.</p>
+
+<h2>
+<a name="homity-client" class="anchor" href="#homity-client"><span class="octicon octicon-link"></span></a>Homity Client</h2>
+
+<p>The <a href="http://github.com/openhomity/homity-client">homity-client</a> is both a Python client-side library for interfacing with the Hub via RESTful API, as well as a linux command line tool for managing all aspects of the Hub.  </p>
+
+<p>The client can be installed on the same hardware as the Hub, or on a remote linux host, or both.</p>
+
+<h2>
+<a name="homity-app" class="anchor" href="#homity-app"><span class="octicon octicon-link"></span></a>Homity App</h2>
+
+<p>Once the homity-hub reaches v1.0 we will be releasing code for an iOS app that interfaces with the Hub.</p>
+
 <h2>
 <a name="additional-components" class="anchor" href="#additional-components"><span class="octicon octicon-link"></span></a>Additional Components</h2>
 
-<h3>
-<a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting started</h3>
+<ul>
+<li>Garage - this will be supported initially with an Arduino-based open source apparatus similar to <a href="http://mydooropener.com/index.html">this</a>, but will over time expand to include commercial garage door systems as well like <a href="http://www.liftmaster.com/lmcv2/connectedhome.htm">Liftmaster</a>.</li>
+<li>Locks - initial support will include <a href="http://www.lockitron.com">Lockitron</a>, but can &amp; will expand to include Schlage and other connected door locks.</li>
+<li>Camera Systems - initial support will include <a href="http://www.blueirissoftware.com">Blue Iris</a>.</li>
+<li>Alarm Systems - haven't found one with an open API yet, but we'll include the abstractions to support any down the line, as well as homegrown alarm systems.</li>
+</ul><h1>
+<a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting started</h1>
 
 <h2>
 <a name="what-youll-need" class="anchor" href="#what-youll-need"><span class="octicon octicon-link"></span></a>What you'll need</h2>
@@ -68,40 +99,39 @@
 <li>This project is in very early stages, so there is some assembly required</li>
 </ul>
 </li>
-<li>A linux server
+<li>A linux host
 
 <ul>
-<li>This can be any type of server or distribution you like</li>
-<li>The code is lightweight enough to run fine on a Raspberry Pi or BeagleBone Black, or could be a VM</li>
+<li>The code is lightweight enough to run on a Raspberry Pi, BeagleBone Black, or a VM</li>
 </ul>
 </li>
-<li>One or more "spoke" devices, which can be
+<li>One or more objects to control
 
 <ul>
-<li>Arduino Uno ethernet</li>
-<li>Spark Core (coming soon)</li>
-<li>Electric Imp (if someone writes a driver)</li>
+<li>Currently only the <a href="http://github.com/openhomity/homity-spoke">homity-spoke</a> is implemented, but eventually this will include any type of spoke, garage, door lock, camera or alarm system.</li>
 </ul>
 </li>
 </ul><h2>
 <a name="setting-it-up" class="anchor" href="#setting-it-up"><span class="octicon octicon-link"></span></a>Setting it up</h2>
 
 <h3>
-<a name="installing-spoke-firmware-on-an-arduino" class="anchor" href="#installing-spoke-firmware-on-an-arduino"><span class="octicon octicon-link"></span></a>Installing Spoke Firmware on an Arduino</h3>
+<a name="installing-homity-spoke-firmware-on-an-arduino" class="anchor" href="#installing-homity-spoke-firmware-on-an-arduino"><span class="octicon octicon-link"></span></a>Installing homity-spoke Firmware on an Arduino</h3>
 
 <ul>
-<li>Download arduino IDE from <a href="http://www.arduino.cc">http://www.arduino.cc</a>
+<li>Download <a href="http://www.arduino.cc">arduino IDE</a>
 </li>
-<li>Open SpokeRestDuino.ino in the IDE</li>
-<li>Modify MAC, IP, and serial/ID</li>
-<li>Upload to arduino</li>
+<li>Download SpokeRestDuino.ino from <a href="http://github.com/openhomity/homity-spoke">homity-spoke repo</a>
+</li>
+<li>Open SpokeRestDuino.ino in the arduino IDE</li>
+<li>Modify MAC, IP, and serial/ID values</li>
+<li>Compile &amp; upload to arduino</li>
 <li>Plug something clever into the arduino
 
 <ul>
-<li>PowerSwitch Tail II</li>
+<li><a href="http://www.powerswitchtail.com/Pages/default.aspx">PowerSwitch Tail II</a></li>
 <li>Door Sensor</li>
 <li>Temperature Sensor</li>
-<li>etc</li>
+<li>???</li>
 </ul>
 </li>
 </ul><h3>
@@ -153,7 +183,7 @@ $ alias homity='python ~/homity-client/homityshell.py'
 </code></pre>
 
 <h3>
-<a name="start-playing-with-the-hub" class="anchor" href="#start-playing-with-the-hub"><span class="octicon octicon-link"></span></a>Start Playing With the Hub</h3>
+<a name="load-the-spoke-into-the-hub-set-up-a-pin" class="anchor" href="#load-the-spoke-into-the-hub-set-up-a-pin"><span class="octicon octicon-link"></span></a>Load the Spoke Into the Hub, Set up a Pin</h3>
 
 <pre><code>#Display full list of commands
 $ homity
@@ -300,20 +330,22 @@ $ homity pin-schedule-add 81f0cddb0a814d9390a110fdb0b2b693 30 16 0-6 true
 +-----------+------------------------------------------------------------------------+
 </code></pre>
 
-<h3>
-<a name="faq" class="anchor" href="#faq"><span class="octicon octicon-link"></span></a>FAQ</h3>
+<h1>
+<a name="faq" class="anchor" href="#faq"><span class="octicon octicon-link"></span></a>FAQ</h1>
 
-<p>TBD</p>
+<p><strong>How do I ask a question or get technical support?</strong>
+Still working this out...</p>
 
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+<p><strong>How can I contribute?</strong>
+Great!  Feel free to fork the repo, make your changes, and submit a pull request.  Style/test requirements coming soon...</p>
 
-<p>(<a href="https://github.com/wochanda" class="user-mention">@wochanda</a>)</p>
+<p><strong>When will you support </strong>
+If its cool we'll get to it soon enough.  Feel free to write a driver yourself and submit a pull request!</p>
 
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+<h1>
+<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h1>
 
-<p>TBD</p>
+<p>Initial work done by (<a href="https://github.com/wochanda" class="user-mention">@wochanda</a>).  Hopefully more folks will get involved and we'll add names to the list.</p>
       </section>
     </div>
 
