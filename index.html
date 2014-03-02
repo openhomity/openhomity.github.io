@@ -36,10 +36,10 @@
 <li>Switches - light, power</li>
 <li>Sensors - digital (door, presence), analog (temperature, light)</li>
 <li>Garage Doors </li>
+<li>Camera Systems</li>
 <li>Door Locks </li>
 <li>Alarm Systems </li>
-<li>Camera Systems</li>
-</ul><p>This project is written such that each of the above objects is abstracted from any specific vendor or implementation, so new devices can be supported through pluggable drivers written by users or vendors themselves.</p>
+</ul><p>This project is written such that each of the above objects is abstracted from any specific product, vendor, or implementation, allowing devices to be supported through pluggable drivers contributed by users or vendors.</p>
 
 <p>This project is still in active development, so not all of the objects above are currently supported.</p>
 
@@ -49,14 +49,14 @@
 <h2>
 <a name="homity-hub" class="anchor" href="#homity-hub"><span class="octicon octicon-link"></span></a>Homity Hub</h2>
 
-<p>The <a href="http://github.com/openhomity/homity-hub">homity-hub</a> is the central brain of the home automation system.  It communicates with and controls/monitors each subsystem - spokes, garages, alarms, cameras, locks.  In addition, it communicates with any clients via an open RESTful API.</p>
+<p>The <a href="http://github.com/openhomity/homity-hub">homity-hub</a> is the central brain of the home automation system.  It communicates with and controls/monitors each southbound subsystem - spokes, garages, cameras, alarms, and locks.  In addition, it communicates with any northbound clients via an open RESTful API.</p>
 
 <p>The Homity Hub software is written in Python using the Flask framework, and is backed by a CouchDB NoSQL database.  It is lightweight enough to run on a <a href="http://www.raspberrypi.org">Raspberry Pi</a> or <a href="http://beagleboard.org/products/beaglebone%20black">BeagleBone Black</a>, or in a virtual machine. </p>
 
-<h2>
-<a name="homity-spoke" class="anchor" href="#homity-spoke"><span class="octicon octicon-link"></span></a>Homity Spoke</h2>
+<h3>
+<a name="spoke" class="anchor" href="#spoke"><span class="octicon octicon-link"></span></a>Spoke</h3>
 
-<p>The Homity Spoke is an object that contains one or more pins, where each pin can either be analog or digital, input or output.  Therefore, a pin can take the following personalities -</p>
+<p>A Spoke is one object that can be controlled by the Homity Hub.  It contains one or more pins, where each pin can either be analog or digital, input or output.  Therefore, a pin can take the following personalities -</p>
 
 <ul>
 <li>Switch - digital &amp; output, examples - light switch, power switch</li>
@@ -65,6 +65,20 @@
 </ul><p>The spoke take the form of a variety of devices, from an Arduino with multiple input &amp; output pins to a smart light switch with just one.  The Hub can support any type of spoke a driver has been written to support.</p>
 
 <p>The <a href="http://github.com/openhomity/homity-spoke">homity-spoke</a> repository has sample code for a spoke based on an <a href="http://arduino.cc/en/Main/ArduinoBoardEthernet">Arduino Uno ethernet</a>, supported by the SpokeRestDuinoDriver on the homity-hub.</p>
+
+<h3>
+<a name="garage-controller" class="anchor" href="#garage-controller"><span class="octicon octicon-link"></span></a>Garage Controller</h3>
+
+<p>A Garage Controller is another object that can be controlled by the Homity Hub.  It contains one or more garages, where each garage represents a door that can be opened or closed, or powered on or off.  </p>
+
+<p>The <a href="http://github.com/openhomity/homity-spoke">homity-spoke</a> repository has sample code for a garage controller based on an <a href="http://arduino.cc/en/Main/ArduinoBoardEthernet">Arduino Uno ethernet</a>, supported by the GarageRestDuinoDriver on the Homity Hub.  Suggestions on how to wire up the GarageRestDuino controller can be found <a href="http://mydooropener.com/index.html">here</a>.</p>
+
+<h3>
+<a name="camera-controller" class="anchor" href="#camera-controller"><span class="octicon octicon-link"></span></a>Camera Controller</h3>
+
+<p>A Camera Controller is another object that can be controlled by the Homity Hub.  It contains one or more cameras, where each camera has the following properties - on, recording, alerting.  On indicates whether the camera is currently powered on, recording indicates if the video stream is being recorded, and alerting indicates whether motion alerts are enabled.</p>
+
+<p>The <a href="http://github.com/openhomity/homity-hub">homity-hub</a> repository currently has driver support for the <a href="http://www.blueirissoftware.com">Blue Iris</a> camera controller software.</p>
 
 <h2>
 <a name="homity-client" class="anchor" href="#homity-client"><span class="octicon octicon-link"></span></a>Homity Client</h2>
@@ -76,15 +90,13 @@
 <h2>
 <a name="homity-app" class="anchor" href="#homity-app"><span class="octicon octicon-link"></span></a>Homity App</h2>
 
-<p>Once the homity-hub reaches v1.0 we will be releasing code for an iOS app that interfaces with the Hub.</p>
+<p>Work in progress - an iOS app that acts as a client of the Homity Hub to allow easy interaction with objects.</p>
 
 <h2>
-<a name="additional-components" class="anchor" href="#additional-components"><span class="octicon octicon-link"></span></a>Additional Components</h2>
+<a name="additional-components-to-be-added" class="anchor" href="#additional-components-to-be-added"><span class="octicon octicon-link"></span></a>Additional Components (to be added)</h2>
 
 <ul>
-<li>Garage - this will be supported initially with an Arduino-based open source apparatus similar to <a href="http://mydooropener.com/index.html">this</a>, but will over time expand to include commercial garage door systems as well like <a href="http://www.liftmaster.com/lmcv2/connectedhome.htm">Liftmaster</a>.</li>
 <li>Locks - initial support will include <a href="http://www.lockitron.com">Lockitron</a>, but can &amp; will expand to include Schlage and other connected door locks.</li>
-<li>Camera Systems - initial support will include <a href="http://www.blueirissoftware.com">Blue Iris</a>.</li>
 <li>Alarm Systems - haven't found one with an open API yet, but we'll include the abstractions to support any down the line, as well as homegrown alarm systems.</li>
 </ul><h1>
 <a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting started</h1>
@@ -108,14 +120,14 @@
 <li>One or more objects to control
 
 <ul>
-<li>Currently only the <a href="http://github.com/openhomity/homity-spoke">homity-spoke</a> is implemented, but eventually this will include any type of spoke, garage, door lock, camera or alarm system.</li>
+<li>Currently the hub supports arduino-based spokes &amp; garage controllers, and BlueIris camera systems.  Abstractions to be added for locks &amp; alarm systems.  Feel free to add drivers.</li>
 </ul>
 </li>
 </ul><h2>
 <a name="setting-it-up" class="anchor" href="#setting-it-up"><span class="octicon octicon-link"></span></a>Setting it up</h2>
 
 <h3>
-<a name="installing-homity-spoke-firmware-on-an-arduino" class="anchor" href="#installing-homity-spoke-firmware-on-an-arduino"><span class="octicon octicon-link"></span></a>Installing homity-spoke Firmware on an Arduino</h3>
+<a name="set-up-arduino-based-spoke-andor-garage-controller" class="anchor" href="#set-up-arduino-based-spoke-andor-garage-controller"><span class="octicon octicon-link"></span></a>Set up arduino-based spoke and/or garage controller</h3>
 
 <ul>
 <li>Download <a href="http://www.arduino.cc">arduino IDE</a>
@@ -124,6 +136,7 @@
 </li>
 <li>Open SpokeRestDuino.ino in the arduino IDE</li>
 <li>Modify MAC, IP, and serial/ID values</li>
+<li>Modify configuration for number &amp; configuration of garage doors (if applicable)</li>
 <li>Compile &amp; upload to arduino</li>
 <li>Plug something clever into the arduino
 
@@ -131,7 +144,7 @@
 <li><a href="http://www.powerswitchtail.com/Pages/default.aspx">PowerSwitch Tail II</a></li>
 <li>Door Sensor</li>
 <li>Temperature Sensor</li>
-<li>???</li>
+<li>Garage door sensor/relay</li>
 </ul>
 </li>
 </ul><h3>
@@ -153,6 +166,12 @@ $ git clone git://github.com/openhomity/homity-hub.git
 $ cd homity-hub/
 $ python initialsetup.py &lt;hub_user_username&gt; &lt;hub_user__password&gt;
 # -- Replace args with username &amp; password you want clients to use when connecting.
+
+# Optional - Enable SSL
+$ cd ~
+$ mkdir certs
+$ openssl req  -nodes -new -x509  -keyout server.key -out server.cert
+## Modify /etc/homity/homityhub.conf to enable SSL &amp; reference key &amp; cert files
 
 # Start The Server
 $ python runhub.py &amp;
@@ -176,14 +195,14 @@ $ git clone git://github.com/openhomity/homity-client.git
 $ cd homity-client/
 $ cp default.conf /etc/homity/homityclient.conf
 $ vi /etc/homity/homityclient.conf 
-# -- Set username &amp; password to hub_user_username and hub_user_password set during hub setup.  Set server if Hub is remote.
+# -- Set username &amp; password to hub_user_username and hub_user_password set during hub setup.  Set server if Hub is remote. Enable SSL if enabled on server.
 
 # Make alias to easily run CLIs.
 $ alias homity='python ~/homity-client/homityshell.py' 
 </code></pre>
 
 <h3>
-<a name="load-the-spoke-into-the-hub-set-up-a-pin" class="anchor" href="#load-the-spoke-into-the-hub-set-up-a-pin"><span class="octicon octicon-link"></span></a>Load the Spoke Into the Hub, Set up a Pin</h3>
+<a name="client-introduction" class="anchor" href="#client-introduction"><span class="octicon octicon-link"></span></a>Client Introduction</h3>
 
 <pre><code>#Display full list of commands
 $ homity
@@ -193,30 +212,69 @@ Homity CLI
 
 Positional arguments:
   &lt;subcommand&gt;
-    pin-list           List pins.
-    pin-schedule-add   Insert a new schedule entry.
+    pin-list            List pins.
+    pin-schedule-add    Insert a new schedule entry.
     pin-schedule-delete
-                       Delete a schedule entry.
-    pin-show           Show a pin.
-    pin-update         Update a pin.
-    spoke-create       Create a new spoke.
-    spoke-delete       Delete a spoke.
-    spoke-driver-list  List available spoke drivers.
-    spoke-list         List spokes.
-    spoke-pin-list     List pins for an spoke.
-    spoke-show         Show an spoke's pin.
-    spoke-update       Update a spoke's settings.
-    help               Display help about this program or one of its
-                       subcommands.
+                        Delete a schedule entry.
+    pin-show            Show a pin.
+    pin-update          Update a pin.
+    spoke-create        Create a new spoke.
+    spoke-delete        Delete a spoke.
+    spoke-driver-list   List available spoke drivers.
+    spoke-list          List spokes.
+    spoke-pin-list      List pins for an spoke.
+    spoke-show          Show an spoke's pin.
+    spoke-update        Update a spoke's settings.
+    garage-controller-create
+                        Create a new garage_controller.
+    garage-controller-delete
+                        Delete a garage_controller.
+    garage-controller-driver-list
+                        List available garage_controller drivers.
+    garage-controller-garage-list
+                        List garages for an garage_controller.
+    garage-controller-list
+                        List garage_controller.
+    garage-controller-show
+                        Show a garage_controller.
+    garage-controller-update
+                        Update a garage_controller's settings.
+    garage-list         List garages.
+    garage-show         Show a garage.
+    garage-update       Update a garage.
+    camera-controller-camera-list
+                        List cameras for an camera_controller.
+    camera-controller-create
+                        Create a new camera_controller.
+    camera-controller-delete
+                        Delete a camera_controller.
+    camera-controller-driver-list
+                        List available camera_controller drivers.
+    camera-controller-list
+                        List camera_controller.
+    camera-controller-show
+                        Show a camera_controller.
+    camera-controller-update
+                        Update a camera_controller's settings.
+    camera-list         List cameras.
+    camera-show         Show a camera.
+    camera-update       Update a camera.
+    help                Display help about this program or one of its
+                        subcommands.
 
 Optional arguments:
-  -d, --debug          Defaults to False
-  -v, --verbose        Print more verbose output
-  --timeout TIMEOUT    Number of seconds to wait for a response
+  -d, --debug           Defaults to False
+  -v, --verbose         Print more verbose output
+  --timeout TIMEOUT     Number of seconds to wait for a response
 
 See "homity help COMMAND" for help on a specific command.
 
-# Display available spoke drivers
+</code></pre>
+
+<h3>
+<a name="working-with-spokes--pins" class="anchor" href="#working-with-spokes--pins"><span class="octicon octicon-link"></span></a>Working with Spokes &amp; Pins</h3>
+
+<pre><code># Display available spoke drivers
 $ homity spoke-driver-list
 [u'SpokeRestDuinoDriver']
 
@@ -328,6 +386,41 @@ $ homity pin-schedule-add 81f0cddb0a814d9390a110fdb0b2b693 30 16 0-6 true
 | status    | True                                                                   |
 | spoke     | None                                                                   |
 +-----------+------------------------------------------------------------------------+
+</code></pre>
+
+<h3>
+<a name="working-with-garages" class="anchor" href="#working-with-garages"><span class="octicon octicon-link"></span></a>Working with Garages</h3>
+
+<pre><code>$ homity garage-controller-driver-list
+[u'GarageRestDuinoDriver']
+
+$ homity garage-controller-list
+
+$ homity garage-controller-create MyGarage GarageRestDuinoDriver address=http://192.168.1.251:8080/
++-------------+---------------------------------------------+
+| Property    | Value                                       |
++-------------+---------------------------------------------+
+| id          | 1f4e22869d940096e2ce3e3bbd003127            |
+| name        | MyGarage                                    |
+| active      | True                                        |
+| driver      | GarageRestDuinoDriver                       |
+| driver_info | {u'address': u'http://192.168.1.251:8080/'} |
++-------------+---------------------------------------------+
+
+$ homity garage-controller-list
++----------------------------------+------------+--------+-----------------------+
+| UUID                             | Name       | Active | Driver                |
++----------------------------------+------------+--------+-----------------------+
+| 1f4e22869d940096e2ce3e3bbd003127 | MyGarage   | True   | GarageRestDuinoDriver |
++----------------------------------+------------+--------+-----------------------+
+
+Rest TBD...
+</code></pre>
+
+<h3>
+<a name="working-with-cameras" class="anchor" href="#working-with-cameras"><span class="octicon octicon-link"></span></a>Working with Cameras</h3>
+
+<pre><code>Coming soon...
 </code></pre>
 
 <h1>
